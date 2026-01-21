@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -6,6 +6,13 @@ class Settings(BaseSettings):
     qdrant_port: int
     collection_name: str
     embedding_model: str
+
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        extra='ignore',  # игнорировать лишние переменные в .env
+        case_sensitive=False
+    )
 
 
 settings = Settings()

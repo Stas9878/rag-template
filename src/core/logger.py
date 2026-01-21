@@ -1,29 +1,36 @@
-import sys
 import logging
 from pathlib import Path
 
 
-LOG_DIR = Path('logs')
-LOG_DIR.mkdir(exist_ok=True)
+# Создаём папку для логов, если её нет
+log_dir = Path('logs')
+log_dir.mkdir(exist_ok=True)
 
+# Форматтер
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
-def get_logger(name: str) -> logging.Logger:
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+# Основной логгер
+logger = logging.getLogger('rag-template')
+logger.setLevel(logging.INFO)
 
-    if not logger.handlers:
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.INFO)
-        formatter = logging.Formatter('[%(asctime)s] %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
+# 1. Обработчик для файла (все логи)
+app_handler = logging.FileHandler(log_dir / 'app.log', encoding='utf-8')
+app_handler.setLevel(logging.INFO)
+app_handler.setFormatter(formatter)
 
-        fh = logging.FileHandler(LOG_DIR / 'app.log')
-        fh.setLevel(logging.INFO)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
+# 2. Обработчик для ошибок (только ошибки)
+error_handler = logging.FileHandler(log_dir / 'errors.log', encoding='utf-8')
+error_handler.setLevel(logging.ERROR)
+error_handler.setFormatter(formatter)
 
-    return logger
+# 3. Обработчик для консоли (все логи)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
 
-
-logger = get_logger()
+# Добавляем все обработчики
+logger.addHandler(app_handler)
+logger.addHandler(error_handler)
+logger.addHandler(console_handler)
