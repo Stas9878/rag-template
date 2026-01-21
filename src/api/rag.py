@@ -6,9 +6,9 @@ from datetime import datetime, timezone
 from langchain_core.documents import Document
 from fastapi import APIRouter, UploadFile, HTTPException
 
-from src.core.rag import search
 from src.core.logger import logger
 from src.core.rag import add_documents
+from src.core.rag import search, generate_answer
 from src.utils.job_with_text import extract_text_from_pdf, chunk_text
 
 router = APIRouter()
@@ -18,23 +18,22 @@ router = APIRouter()
 def query_rag(query):
     start_time = time.time()
     try:
+        # Поиск
         docs = search(query, k=3)
-        results = [
-            {
-                'content': doc.page_content,
-                'metadata': doc.metadata,
-            }
-            for doc in docs
-        ]
+        context = '\n\n'.join([doc.page_content for doc in docs])
+
+        # Генерация ответа
+        answer = generate_answer(query, context)
+
         duration = time.time() - start_time
         return {
             'query': query,
-            'results': results,
+            'answer': answer,
             'metrics': {
-                'retrieval_time_sec': round(duration, 3),
-                'num_results': len(results),
+                'retrieval_time_sec': round(duration, 3)
             }
         }
+
     except Exception as e:
         logger.error(f'Ошибка в /query: {e}')
         raise HTTPException(status_code=500, detail=str(e))
