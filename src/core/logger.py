@@ -1,5 +1,5 @@
-import logging
 import sys
+import logging
 from pathlib import Path
 
 
@@ -24,3 +24,6 @@ def get_logger(name: str) -> logging.Logger:
         logger.addHandler(fh)
 
     return logger
+
+
+logger = get_logger()

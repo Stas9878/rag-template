@@ -1,12 +1,11 @@
 import time
 from fastapi import APIRouter, HTTPException
 
+from src.core.logger import logger
 from src.retrieval.qdrant_retriever import get_retriever
-from src.core.logger import get_logger
 
 
 router = APIRouter()
-logger = get_logger(__name__)
 
 
 @router.post('/query')

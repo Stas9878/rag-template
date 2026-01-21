@@ -1,7 +1,8 @@
+from qdrant_client import QdrantClient
 from langchain_qdrant import QdrantVectorStore
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from qdrant_client import QdrantClient
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue
+
 from src.core.settings import settings
 
 
