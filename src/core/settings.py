@@ -5,7 +5,9 @@ class Settings(BaseSettings):
     qdrant_host: str
     qdrant_port: int
     collection_name: str
-    embedding_model: str
+    embedding_model_name: str
+    vector_size: int = 768
+
 
     model_config = SettingsConfigDict(
         env_file='.env',
