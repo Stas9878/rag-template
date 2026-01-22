@@ -7,7 +7,7 @@ from fastapi import APIRouter, UploadFile, HTTPException
 
 from src.utils.timer import Timer
 from src.core.logger import logger
-from src.core.rag import search, generate_answer, add_documents
+from src.core.retrieve import search, generate_answer, add_documents
 from src.utils.job_with_text import extract_text_from_pdf, chunk_text
 
 router = APIRouter()
