@@ -1,4 +1,5 @@
 import hashlib
+import logging
 import mimetypes
 from pathlib import Path
 from datetime import datetime, timezone
@@ -6,9 +7,10 @@ from langchain_core.documents import Document
 from fastapi import APIRouter, UploadFile, HTTPException, Query
 
 from src.utils.timer import Timer
-from src.core.logger import logger
 from src.core.retrieve import search, generate_answer, add_documents
 from src.utils.job_with_text import extract_text_from_pdf, chunk_text
+
+logger = logging.getLogger('__name__')
 
 router = APIRouter()
 

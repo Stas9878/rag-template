@@ -1,11 +1,13 @@
+import logging
 from qdrant_client.http import models
 from qdrant_client import QdrantClient
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
 
-from src.core.logger import logger
 from src.core.settings import settings
+
+logger = logging.getLogger('__name__')
 
 # Инициализация Qdrant
 client = QdrantClient(host=settings.qdrant_host, port=settings.qdrant_port)

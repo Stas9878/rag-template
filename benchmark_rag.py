@@ -2,7 +2,7 @@
 import json
 import httpx
 import asyncio
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 # URL сервиса
 API_URL = 'http://127.0.0.1:8000/api/query'
