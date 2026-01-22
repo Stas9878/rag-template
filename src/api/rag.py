@@ -1,4 +1,3 @@
-import time
 import hashlib
 import mimetypes
 from pathlib import Path
@@ -6,32 +5,48 @@ from datetime import datetime, timezone
 from langchain_core.documents import Document
 from fastapi import APIRouter, UploadFile, HTTPException
 
+from src.utils.timer import Timer
 from src.core.logger import logger
-from src.core.rag import add_documents
-from src.core.rag import search, generate_answer
+from src.core.rag import search, generate_answer, add_documents
 from src.utils.job_with_text import extract_text_from_pdf, chunk_text
 
 router = APIRouter()
 
 
 @router.post('/query')
-def query_rag(query):
-    start_time = time.time()
+def query_rag(query: str):
+    timer = Timer()
+
     try:
-        # Поиск
-        docs = search(query, k=3)
-        context = '\n\n'.join([doc.page_content for doc in docs])
+        # Этап 1: Retrieval
+        with timer.measure('retrieval_time_sec'):
+            docs = search(query, k=3)
 
-        # Генерация ответа
-        answer = generate_answer(query, context)
+        if docs:
+            context = '\n\n'.join([doc.page_content for doc in docs])
 
-        duration = time.time() - start_time
+            # Этап 2: Generation
+            with timer.measure('generation_time_sec'):
+                answer = generate_answer(query, context)
+        else:
+            answer = None
+
+        results = [
+            {
+                'content': doc.page_content,
+                'metadata': doc.metadata,
+            }
+            for doc in docs
+        ]
+
+        metrics = timer.get_metrics()
+        metrics['num_results'] = len(results)
+
         return {
             'query': query,
             'answer': answer,
-            'metrics': {
-                'retrieval_time_sec': round(duration, 3)
-            }
+            'results': results,
+            'metrics': metrics
         }
 
     except Exception as e:
