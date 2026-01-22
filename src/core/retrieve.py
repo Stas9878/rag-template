@@ -37,7 +37,7 @@ def add_documents(documents: list[Document]):
     logger.info(f'Добавлено {len(documents)} документов')
 
 
-def search(query: str, k: int = 5):
+def search(query: str, k: int):
     query_filter = models.Filter(
         must=[
             models.FieldCondition(

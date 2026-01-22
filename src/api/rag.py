@@ -3,7 +3,7 @@ import mimetypes
 from pathlib import Path
 from datetime import datetime, timezone
 from langchain_core.documents import Document
-from fastapi import APIRouter, UploadFile, HTTPException
+from fastapi import APIRouter, UploadFile, HTTPException, Query
 
 from src.utils.timer import Timer
 from src.core.logger import logger
@@ -13,14 +13,14 @@ from src.utils.job_with_text import extract_text_from_pdf, chunk_text
 router = APIRouter()
 
 
-@router.post('/query')
-def query_rag(query: str):
+@router.get('/query')
+def query_rag(query: str = Query(..., description='Поисковый запрос')):
     timer = Timer()
 
     try:
         # Этап 1: Retrieval
         with timer.measure('retrieval_time_sec'):
-            docs = search(query, k=3)
+            docs = search(query, k=10)
 
         if docs:
             context = '\n\n'.join([doc.page_content for doc in docs])
